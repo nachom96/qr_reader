@@ -1,0 +1,7 @@
+- Para usar sqflite
+
+https://pub.dev/packages/sqflite
+
+https://pub.dev/packages/path_provider
+
+https://sqlitebrowser.org/dl/
