@@ -29,11 +29,8 @@ class DBProvider {
     print(path);
 
     // Crear base de datos
-    return await openDatabase(
-      path, 
-      version: 1, 
-      onOpen: (db) {},
-      onCreate: (Database db, int version) async {
+    return await openDatabase(path, version: 1, onOpen: (db) {},
+        onCreate: (Database db, int version) async {
       await db.execute('''
           CREATE TABLE Scans(
             id INTEGER PRIMARY KEY,
@@ -67,5 +64,28 @@ class DBProvider {
     final res = await db?.insert('Scans', nuevoScan.toJson());
     print(res);
     return res;
+  }
+
+  Future<ScanModel?> getScanById(int id) async {
+    final db = await database;
+    final res = await db?.query('Scans', where: 'id = ?', whereArgs: [id]);
+
+    return ScanModel.fromJson(res!.first);
+  }
+
+  Future<List<ScanModel?>> getTodosLosScans() async {
+    final db = await database;
+    final res = await db?.query('Scans');
+
+    return res!.map((s) => ScanModel.fromJson(s)).toList();
+  }
+
+  Future<List<ScanModel?>> getScansPorTipo(String tipo) async {
+    final db = await database;
+    final res = await db?.rawQuery('''
+        SELECT * FROM Scans WHERE tipo = '$tipo'
+      ''');
+
+    return res!.map((s) => ScanModel.fromJson(s)).toList();
   }
 }
