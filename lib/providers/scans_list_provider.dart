@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qr_reader/providers/db_provider.dart';
 
 class ScanListProvider extends ChangeNotifier {
-  List<ScanModel> scans = [];
+  List<ScanModel?> scans = [];
   String tipoSeleccionado = 'http';
 
   nuevoScan(String valor) async {
@@ -16,5 +16,30 @@ class ScanListProvider extends ChangeNotifier {
       scans.add(nuevoScan);
       notifyListeners();
     }
+  }
+
+  cargarScans() async {
+    final scans = await DBProvider.db.getTodosLosScans();
+    this.scans = [...scans];
+    notifyListeners();
+  }
+
+  cargarScansPorTipo(String tipo) async {
+    final scans = await DBProvider.db.getScansPorTipo(tipo);
+    this.scans = [...scans];
+    this.tipoSeleccionado = tipo;
+    notifyListeners();
+  }
+
+  borrarTodos() async {
+    await DBProvider.db.deleteAllScans();
+    this.scans = [];
+    notifyListeners();
+  }
+
+  borrarScanPorId(int id) async {
+    await DBProvider.db.deleteScan(id);
+    // Borra un scan y regresa la lista con los scans
+    cargarScansPorTipo(this.tipoSeleccionado);
   }
 }
