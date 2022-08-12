@@ -88,4 +88,29 @@ class DBProvider {
 
     return res!.map((s) => ScanModel.fromJson(s)).toList();
   }
+
+  Future<int?> updateScan(ScanModel nuevoScan) async {
+    final db = await database;
+    // Si no se especifica el Where, actualiza todos los datos. Así se actualiza el id que tenga ese scan
+    final res = await db?.update('Scans', nuevoScan.toJson(),
+        where: 'id = ?', whereArgs: [nuevoScan.id]);
+
+    return res;
+  }
+
+  Future<int?> deleteScan(int id) async {
+    final db = await database;
+    // Si no se especifica el Where, se borra todo
+    final res = await db?.delete('Scans', where: 'id = ?', whereArgs: [id]);
+    return res;
+  }
+
+  // Borrar todo, hecho de una manera más compleja
+  Future<int?> deleteAllScans() async {
+    final db = await database;
+    final res = await db?.rawDelete('''
+        DELETE FROM Scans
+        ''');
+    return res;
+  }
 }
